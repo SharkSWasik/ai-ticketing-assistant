@@ -6,12 +6,29 @@ authors = [
     {name = "Apolline Wasik"}
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "mistralai (>=1.9.1,<2.0.0)"
+    "mistralai (>=1.9.1,<2.0.0)",
+    "ipykernel (>=6.29.5,<7.0.0)",
+    "jupyter (>=1.1.1,<2.0.0)",
+    "jupyterlab (>=4.4.4,<5.0.0)",
+    "jupyter-server (>=2.16.0,<3.0.0)",
+    "notebook (>=7.4.4,<8.0.0)",
+    "kagglehub (>=0.3.12,<0.4.0)",
+    "kaggle (>=1.7.4.5,<2.0.0.0)",
+    "pandas (>=2.3.0,<3.0.0)",
+    "matplotlib (>=3.10.3,<4.0.0)",
+    "scikit-learn (>=1.7.0,<2.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "transformers (>=4.53.1,<5.0.0)",
+    "torch (>=2.7.1,<3.0.0)",
+    "sentence-transformers (>=5.0.0,<6.0.0)",
+    "lightgbm (>=4.6.0,<5.0.0)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+package-mode = false
