@@ -1,0 +1,101 @@
+ref_support_team,pred_support_team
+0,Customer Service,Technical Support
+1,Technical Support,Technical Support
+2,Product Support,Technical Support
+3,Customer Service,Technical Support
+4,Sales and Pre-Sales,Customer Service
+5,Technical Support,Technical Support
+6,Technical Support,Technical Support
+7,Billing and Payments,Billing and Payments
+8,Returns and Exchanges,Returns and Exchanges
+9,Technical Support,Technical Support
+10,Technical Support,Product Support
+11,Product Support,Technical Support
+12,Product Support,Technical Support
+13,IT Support,Technical Support
+14,Technical Support,Technical Support
+15,IT Support,Technical Support
+16,Customer Service,Technical Support
+17,Technical Support,Technical Support
+18,Returns and Exchanges,Technical Support
+19,Technical Support,Technical Support
+20,IT Support,IT Support
+21,Technical Support,Technical Support
+22,Billing and Payments,Billing and Payments
+23,Customer Service,Technical Support
+24,Technical Support,Technical Support
+25,IT Support,IT Support
+26,IT Support,IT Support
+27,Sales and Pre-Sales,Customer Service
+28,Service Outages and Maintenance,Technical Support
+29,Customer Service,Technical Support
+30,Returns and Exchanges,Returns and Exchanges
+31,Technical Support,Technical Support
+32,Technical Support,Technical Support
+33,Technical Support,Technical Support
+34,Technical Support,Technical Support
+35,Product Support,Technical Support
+36,Customer Service,Technical Support
+37,Technical Support,IT Support
+38,Product Support,IT Support
+39,Product Support,Technical Support
+40,Product Support,Technical Support
+41,IT Support,Technical Support
+42,Returns and Exchanges,Returns and Exchanges
+43,Product Support,Technical Support
+44,Product Support,Technical Support
+45,Returns and Exchanges,Returns and Exchanges
+46,Customer Service,Technical Support
+47,Technical Support,Technical Support
+48,Customer Service,Technical Support
+49,Product Support,Product Support
+50,IT Support,Technical Support
+51,Technical Support,Technical Support
+52,Technical Support,Technical Support
+53,Technical Support,Technical Support
+54,Customer Service,Technical Support
+55,Sales and Pre-Sales,Sales and Pre-Sales
+56,Technical Support,Technical Support
+57,Product Support,Technical Support
+58,Technical Support,Technical Support
+59,Technical Support,Technical Support
+60,Customer Service,Technical Support
+61,Technical Support,Product Support
+62,Customer Service,Technical Support
+63,IT Support,IT Support
+64,IT Support,IT Support
+65,IT Support,Technical Support
+66,Technical Support,Technical Support
+67,Sales and Pre-Sales,Sales and Pre-Sales
+68,Human Resources,Human Resources
+69,Product Support,Product Support
+70,Technical Support,Technical Support
+71,Sales and Pre-Sales,Technical Support
+72,Technical Support,Technical Support
+73,Product Support,Technical Support
+74,Product Support,Product Support
+75,Technical Support,Technical Support
+76,IT Support,IT Support
+77,Technical Support,Technical Support
+78,IT Support,Technical Support
+79,Product Support,Technical Support
+80,Customer Service,Technical Support
+81,Service Outages and Maintenance,Service Outages and Maintenance
+82,Technical Support,Technical Support
+83,General Inquiry,Technical Support
+84,IT Support,IT Support
+85,Customer Service,Technical Support
+86,Technical Support,Technical Support
+87,Product Support,Technical Support
+88,Returns and Exchanges,Returns and Exchanges
+89,IT Support,Technical Support
+90,Customer Service,Technical Support
+91,Billing and Payments,Billing and Payments
+92,Technical Support,Technical Support
+93,IT Support,IT Support
+94,Billing and Payments,Technical Support
+95,Customer Service,Technical Support
+96,Customer Service,Customer Service
+97,Service Outages and Maintenance,Technical Support
+98,Technical Support,Technical Support
+99,IT Support,Technical Support
