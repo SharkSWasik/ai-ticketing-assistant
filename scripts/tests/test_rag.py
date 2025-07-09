@@ -16,7 +16,6 @@ df = loader.load_data()
 processor = DataProcessor()
 df = processor.clean_df_inplace(df)
 
-#Generate embeddings for text features
 problem = df["body"].astype(str)
 responses = df["answer"].astype(str)
 
