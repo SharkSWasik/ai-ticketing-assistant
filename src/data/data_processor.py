@@ -21,7 +21,7 @@ class DataProcessor:
         """
         return self.embedding_model.encode(texts)
     
-    def encode_labels(self, df: pd.DataFrame, label_columns: List[str], ref_cols: List[str], pred_cols: List[str]) -> pd.DataFrame:
+    def encode_labels_pred(self, df: pd.DataFrame, label_columns: List[str], ref_cols: List[str], pred_cols: List[str]) -> pd.DataFrame:
         """
         Encode reference and predicted label columns using LabelEncoder.
 
@@ -50,6 +50,21 @@ class DataProcessor:
             df_encoded[f"{ref_col}_encoded"] = le.fit_transform(df_encoded[ref_col])
             
             df_encoded[f"{pred_col}_encoded"] = le.transform(df_encoded[pred_col])
+
+        return df_encoded
+    
+    def encode_labels(self, df: pd.DataFrame, label_columns: List[str])-> pd.DataFrame:
+
+        df_encoded = df.copy()
+
+        for col in label_columns:
+
+            if col not in self.label_encoders:
+                self.label_encoders[col] = LabelEncoder()
+
+            le = self.label_encoders[col]
+            
+            df_encoded[f"{col}_encoded"] = le.fit_transform(df_encoded[col])
 
         return df_encoded
     

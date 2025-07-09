@@ -7,7 +7,7 @@ authors = [
 readme = "README.md"
 
 [tool.poetry]
-packages = [{ include = "src" }]
+packages = [{ include = "src"}]
 
 [build-system]
 requires-python = ">=3.10"
