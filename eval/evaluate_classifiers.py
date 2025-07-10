@@ -11,7 +11,6 @@ from src.visualization.plotter import DataPlotter
 from src.models.baseline.lightgbm_classifier import LightGBMClassifier
 from src.models import LLMClassifierInferencer
 
-
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Evaluate LightGBM classifier and LLM Classifier for ticket priority prediction",
@@ -58,8 +57,8 @@ def parse_arguments():
 def compute_metrics(y_true, y_pred):
     results = {
         "accuracy": accuracy_score(y_true, y_pred),
-        "f1": f1_score(y_true, y_pred),
-        "recall": recall_score(y_true, y_pred),
+        "f1": f1_score(y_true, y_pred, average="micro"),
+        "recall": recall_score(y_true, y_pred, average="micro"),
     }
     return results
 
@@ -82,8 +81,10 @@ def split_dataset(args):
 
     samples = []
     n_per = 20
-
-    for _, group in df.groupby(["combined_strata"]):
+    
+    train_df, rest_df = train_test_split(df, test_size=0.2, random_state=42)
+    
+    for _, group in train_df.groupby(["combined_strata"]):
         if len(group) >= n_per:
             sampled = group.sample(n=n_per, random_state=42, replace=False)
         else:
@@ -91,11 +92,9 @@ def split_dataset(args):
         samples.append(sampled)
 
     df_balanced = pd.concat(samples).reset_index(drop=True)
-
-    train_df, rest_df = train_test_split(df_balanced, test_size=0.2, random_state=42)
     val_df, test_df = train_test_split(rest_df, test_size=0.5, random_state=42)
 
-    train_df.to_csv(args.train_dataset_path, index=False)
+    df_balanced.to_csv(args.train_dataset_path, index=False)
     val_df.to_csv(args.val_dataset_path, index=False)
     test_df.to_csv(args.test_dataset_path, index=False)
 
@@ -128,6 +127,8 @@ def evaluate_classifier(args):
     if args.plot_results:
 
         plotter = DataPlotter()
+
+        plotter.plot_priority(test_df)
 
         plotter.create_model_comparison_plot({'priority' : compute_metrics(test_encoded_labels, baseline_preds)},
                                     {'priority' : compute_metrics(test_encoded_labels, new_priorities)},

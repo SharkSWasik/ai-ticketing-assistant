@@ -7,7 +7,8 @@ class DataPlotter:
     def __init__(self, figsize=(20, 5)):
         self.figsize = figsize
         
-    def plot_priority(self, ax: plt.Axes, df: pd.DataFrame):
+    def plot_priority(self, df: pd.DataFrame):
+        _, ax = plt.subplots(figsize=(7, 4))
         counts = df['priority'].value_counts().reindex(['high','medium','low'])
         counts.plot(
             kind="bar",
