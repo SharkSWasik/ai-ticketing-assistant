@@ -3,11 +3,9 @@ import numpy as np
 
 from src.data.data_loader import SingleCSVDataLoader
 from src.data.data_processor import DataProcessor
-from src.visualization.plotter import DataPlotter
 from src.models.baseline.top_k_recommender import TopKRecommender
 
 from sklearn.model_selection import train_test_split
-
 
 #Load tickets
 loader = SingleCSVDataLoader(file_path="dataset/data/dataset-tickets-multi-lang3-4k.csv")

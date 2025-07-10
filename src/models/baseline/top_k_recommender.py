@@ -3,6 +3,7 @@ from ..base_model import BaseModel
 
 import numpy as np
 import pandas as pd
+from joblib import dump, load
 
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -32,3 +33,16 @@ class TopKRecommender(BaseModel):
             recommendations.append(top_k_responses)
 
         return recommendations
+    
+    def save(self, path:str):
+
+        with open(path, 'wb') as f:
+            dump(self, f)
+
+    @classmethod
+    def load(cls, path: str) -> 'TopKRecommender':
+        
+        with open(path, 'rb') as f:
+            model = load(f)
+
+        return model

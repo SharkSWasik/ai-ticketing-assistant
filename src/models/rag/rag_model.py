@@ -5,6 +5,8 @@ from .simple_generator import SimpleGenerator
 import faiss
 import pandas as pd
 import re
+from joblib import dump, load
+
 from sentence_transformers import SentenceTransformer
 
 class RAGModel(BaseModel):
@@ -89,3 +91,16 @@ class RAGModel(BaseModel):
             results.append(gen)
 
         return results
+    
+    def save(self, path:str):
+
+        with open(path, 'wb') as f:
+            dump(self, f)
+
+    @classmethod
+    def load(cls, path: str) -> 'RAGModel':
+        
+        with open(path, 'rb') as f:
+            model = load(f)
+
+        return model

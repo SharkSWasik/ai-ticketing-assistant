@@ -22,7 +22,7 @@ def objective(trial, X, y):
     scores = cross_val_score(model, X, y, cv=cv, scoring="f1_weighted")
     return scores.mean()
 
-def run_optimization(X: pd.DataFrame, y: pd.Series, n_trials: int = 20):
+def run_optimization(X: pd.DataFrame, y: pd.DataFrame, n_trials: int = 20):
 
     study = optuna.create_study(direction="maximize")
     study.optimize(lambda t: objective(t, X, y), n_trials=n_trials)

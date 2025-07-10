@@ -1,5 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+from typing import Dict
 
 class DataPlotter:
     def __init__(self, figsize=(20, 5)):
@@ -57,3 +59,53 @@ class DataPlotter:
         ax.set_title("Classification Performance Metrics")
         plt.tight_layout()
         plt.show()
+
+    def create_model_comparison_plot(self, model_a_results : Dict, model_b_results : Dict, model_names=["Model A", "Model B"]):
+        
+        class_types = list(model_a_results.keys())
+        metrics = ['f1_score', 'accuracy', 'recall']
+        
+        data = []
+        for class_type in class_types:
+            for model_name, results in [(model_names[0], model_a_results), (model_names[1], model_b_results)]:
+                data.append({
+                    'class_type': class_type,
+                    'model': model_name,
+                    'f1_score': results[class_type]['f1'],
+                    'accuracy': results[class_type]['accuracy'],
+                    'recall': results[class_type]['recall']
+                })
+        
+        df_comparison = pd.DataFrame(data)
+        
+        _, axes = plt.subplots(1, len(class_types), figsize=(12, 6))
+        if len(class_types) == 1:
+            axes = [axes]
+        
+        colors = ['#3498db', '#e74c3c']
+        width = 0.25
+        
+        for i, class_type in enumerate(class_types):
+            ax = axes[i]
+            class_data = df_comparison[df_comparison['class_type'] == class_type]
+            
+            x = np.arange(len(metrics))
+            
+            for j, model in enumerate([model_names[0], model_names[1]]):
+                model_data = class_data[class_data['model'] == model]
+                values = [model_data[metric].iloc[0] for metric in metrics]
+                
+                ax.bar(x + j * width, values, width, label=model, color=colors[j])
+            
+            ax.set_title(class_type, fontsize=12, fontweight='bold')
+            ax.set_xlabel('Classification Metrics')
+            ax.set_xticks(x + width / 2)
+            ax.set_xticklabels(['F1 Score', 'Accuracy', 'Recall'])
+            ax.set_ylim(0, 1)
+            ax.grid(True, alpha=0.3)
+            ax.legend()
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return df_comparison

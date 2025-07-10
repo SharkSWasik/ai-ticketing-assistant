@@ -10,3 +10,11 @@ class BaseModel(ABC):
     def predict(self, X: Any) -> Any:
         """
         """
+    @abstractmethod
+    def save(self, X: Any) -> Any:
+        """
+        """
+    @abstractmethod
+    def load(self, X: Any) -> Any:
+        """
+        """

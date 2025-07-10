@@ -1,32 +1,70 @@
 import pandas as pd
-import numpy as np
 import os
+import argparse
 
 from sklearn.metrics import accuracy_score, f1_score, recall_score
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_validate
-from sklearn.model_selection import StratifiedKFold
 
-from src.models.baseline.optimize_lightgbm import run_optimization
 from src.data.data_loader import SingleCSVDataLoader
 from src.data.data_processor import DataProcessor
 from src.visualization.plotter import DataPlotter
 from src.models.baseline.lightgbm_classifier import LightGBMClassifier
 from src.models import LLMClassifierInferencer
 
-def evaluate_classifier(y_true, y_pred):
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description="Evaluate LightGBM classifier and LLM Classifier for ticket priority prediction",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    
+    parser.add_argument(
+        "--train_dataset_path", 
+        type=str, 
+        default="dataset/splits/train.csv",
+        help="Path to the dataset train CSV file"
+    )
+
+    parser.add_argument(
+        "--test_dataset_path", 
+        type=str, 
+        default="dataset/splits/test.csv",
+        help="Path to the dataset test CSV file"
+    )
+
+    parser.add_argument(
+        "--val_dataset_path", 
+        type=str, 
+        default="dataset/splits/val.csv",
+        help="Path to the dataset val file"
+    )
+
+    parser.add_argument(
+        "--lgb_model", 
+        type=str, 
+        default="dataset/models/lightgbm_priority.joblib",
+        help="Path to the lgb model"
+    )
+    
+    parser.add_argument(
+        "--plot-results", 
+        action="store_true", 
+        default=True,
+        help="Generate and display performance plots"
+    )
+    
+    return parser.parse_args()
+
+def compute_metrics(y_true, y_pred):
     results = {
         "accuracy": accuracy_score(y_true, y_pred),
-        "f1": f1_score(y_true, y_pred, average="weighted"),
-        "recall": recall_score(y_true, y_pred, average="weighted"),
+        "f1": f1_score(y_true, y_pred),
+        "recall": recall_score(y_true, y_pred),
     }
     return results
 
-train_dataset_path = "dataset/splits/train.csv"
-val_dataset_path = "dataset/splits/val.csv"
-test_dataset_path = "dataset/splits/test.csv"
+def split_dataset(args):
 
-if not os.path.exists(train_dataset_path) or not os.path.exists(val_dataset_path) or not os.path.exists(test_dataset_path):
     #Load tickets
     loader = SingleCSVDataLoader(file_path="dataset/data/dataset-tickets-multi-lang3-4k.csv")
     df = loader.load_data()
@@ -57,73 +95,49 @@ if not os.path.exists(train_dataset_path) or not os.path.exists(val_dataset_path
     train_df, rest_df = train_test_split(df_balanced, test_size=0.2, random_state=42)
     val_df, test_df = train_test_split(rest_df, test_size=0.5, random_state=42)
 
-    train_df.to_csv(train_dataset_path, index=False)
-    val_df.to_csv(val_dataset_path, index=False)
-    test_df.to_csv(test_dataset_path, index=False)
+    train_df.to_csv(args.train_dataset_path, index=False)
+    val_df.to_csv(args.val_dataset_path, index=False)
+    test_df.to_csv(args.test_dataset_path, index=False)
 
-processor = DataProcessor()
+def evaluate_classifier(args):
 
-train_df = pd.read_csv(train_dataset_path)
-test_df = pd.read_csv(test_dataset_path)
+    if (not os.path.exists(args.train_dataset_path) or
+    not os.path.exists(args.val_dataset_path) or
+    not os.path.exists(args.test_dataset_path)):
+        split_dataset(args)
+        
+    processor = DataProcessor()
 
-print("Generate Embeddings")
-train_embeddings = processor.generate_embeddings(train_df["body"].astype(str))
-test_embeddings = processor.generate_embeddings(test_df["body"].astype(str))
+    test_df = pd.read_csv(args.test_dataset_path)
 
-print("Generate Labels")
-train_encoded_labels = processor.encode_labels(train_df, ["priority"])["priority_encoded"].values
-test_encoded_labels = processor.encode_labels(test_df, ["priority"])["priority_encoded"].values
+    print("Generate Embeddings")
+    test_embeddings = processor.generate_embeddings(test_df["body"].astype(str))
+    columns = [f"feature_{i+1}" for i in range(test_embeddings.shape[1])]
 
-columns = [f"feature_{i+1}" for i in range(train_embeddings.shape[1])]
-df_embeddings = pd.DataFrame(train_embeddings, columns=columns)
-df_embeddings["y"] = train_encoded_labels.tolist()
+    print("Generate Labels")
+    test_encoded_labels = processor.encode_labels(test_df, ["priority"])["priority_encoded"].values
 
-#Run Optuna optimization to find best params
-print("Starting HPO")
-best_params = run_optimization(df_embeddings[columns], df_embeddings["y"], n_trials=5
-)
+    lightgbm_classifier = LightGBMClassifier.load(args.lgb_model)
+    llm_classifier = LLMClassifierInferencer()
 
-print("Best parameters found:", best_params)
+    baseline_preds = lightgbm_classifier.predict(pd.DataFrame(test_embeddings, columns=columns))
+    new_preds = llm_classifier.predict(test_df["body"].values)
+    new_priorities_str = [res['priority'] for res in new_preds if 'priority' in res]
+    new_priorities = processor.encode_labels(pd.DataFrame(new_priorities_str, columns=['priority']), ["priority"])["priority_encoded"].values
 
-#Best config dict for LightGBMClassifier
-lgb_config = {
-    "n_estimators":        best_params["n_estimators"],
-    "num_leaves":          best_params["num_leaves"],
-    "learning_rate":       best_params["learning_rate"],
-    "max_depth":           best_params["max_depth"],
-    "min_data_in_leaf":    best_params["min_data_in_leaf"],
-    "reg_alpha":           best_params["reg_alpha"],
-    "reg_lambda":          best_params["reg_lambda"],
-    "class_weight":        "balanced",
-    "random_state":        42,
-    "verbose":             -1,
-}
+    if args.plot_results:
 
-clf = LightGBMClassifier(config=lgb_config)
+        plotter = DataPlotter()
 
-cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+        plotter.create_model_comparison_plot({'priority' : compute_metrics(test_encoded_labels, baseline_preds)},
+                                    {'priority' : compute_metrics(test_encoded_labels, new_priorities)},
+                                    model_names=["Baseline Lightgbm", "LLM finetuned"])
 
-results = cross_validate(
-    clf.model, df_embeddings[columns], df_embeddings["y"],
-    cv=cv, 
-    scoring='f1_weighted',
-    return_estimator=True
-)
+        print(compute_metrics(test_encoded_labels, new_priorities))
 
-best_fold_idx = results['test_score'].argmax()
-best_model = results['estimator'][best_fold_idx]
 
-llm_classifier = LLMClassifierInferencer()
+if __name__ == "__main__":
+    
+    args = parse_arguments()
 
-baseline_preds = best_model.predict(test_embeddings)
-new_preds = llm_classifier.predict(test_df["body"].values)
-new_priorities_str = [res['priority'] for res in new_preds if 'priority' in res]
-new_priorities = processor.encode_labels(pd.DataFrame(new_priorities_str, columns=['priority']), ["priority"])["priority_encoded"].values
-
-plotter = DataPlotter()
-
-plotter.create_model_comparison_plot({'priority' : evaluate_classifier(test_encoded_labels, baseline_preds)},
-                             {'priority' : evaluate_classifier(test_encoded_labels, new_priorities)},
-                             model_names=["Baseline Lightgbm", "LLM finetuned"])
-
-print(evaluate_classifier(test_encoded_labels, new_priorities))
+    evaluate_classifier(args)
