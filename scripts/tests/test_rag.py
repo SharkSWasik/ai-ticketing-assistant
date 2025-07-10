@@ -36,7 +36,7 @@ rag = RAGModel(
 
 print("Training the RAG")
 #create the embedding and vector database
-rag.train(df)
+rag.train(df.iloc[train_idx])
 
 print("Testing the RAG")
 #try gen on a test set sample
