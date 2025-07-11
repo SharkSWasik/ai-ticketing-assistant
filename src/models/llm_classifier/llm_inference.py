@@ -5,7 +5,7 @@ from mistralai import Mistral
 
 class LLMClassifierInferencer:
 
-    def __init__(self, api_key: str = None, client=None, model_id: str = "ft:classifier:ministral-3b-latest:7e530b29:20250709:e3ee779b"):
+    def __init__(self, api_key: str = None, client=None, model_id: str = "ft:classifier:ministral-3b-latest:7e530b29:20250711:3a490782"):
 
         self.model_id = model_id
         self.api_key = api_key or os.environ.get("MISTRAL_API_KEY")
