@@ -30,7 +30,8 @@ class SimpleGenerator:
         ---------------------
         Given the context information and not prior knowledge, answer the query.
         Query: {problem}
-
+        You MUST detect the language of the Query, and respond in the exact same language.
+        
         CRITICAL: You MUST return ONLY a valid JSON object with exactly this structure. 
         Do not include any explanatory text, markdown formatting, or additional content.
         Return only the JSON object with these exact field names and value types:

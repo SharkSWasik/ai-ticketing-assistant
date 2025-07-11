@@ -33,6 +33,7 @@ keras = ">=3.10.0,<4.0.0"
 tensorflow = ">=2.19.0,<3.0.0"
 wandb = ">=0.21.0,<0.22.0"
 tf-keras = "^2.19.0"
+streamlit = "^1.46.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
