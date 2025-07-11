@@ -4,6 +4,8 @@ import json
 from mistralai import Mistral
 from joblib import dump, load
 
+from typing import Dict
+
 class SimpleGenerator:
 
     def __init__(
@@ -19,7 +21,7 @@ class SimpleGenerator:
         self.max_tokens = max_tokens
         self.temperature = temperature
 
-    def generate(self, problem: str, context: str) -> str:
+    def generate(self, problem: str, context: str) -> Dict:
         
         prompt = f"""
         Context information is below.
@@ -58,9 +60,7 @@ class SimpleGenerator:
         )
         content = response.choices[0].message.content
         try:
-            parsed = json.loads(content)
-            
-            return json.dumps(parsed, ensure_ascii=False)
+            return json.loads(content)
         
         except json.JSONDecodeError as e:
             raise RuntimeError(f"Invalid JSON returned by generator: {content}")

@@ -8,6 +8,7 @@ import re
 from joblib import dump, load
 
 from sentence_transformers import SentenceTransformer
+from typing import Dict
 
 class RAGModel(BaseModel):
 
@@ -77,7 +78,7 @@ class RAGModel(BaseModel):
         self.index = faiss.IndexFlatL2(self.d)
         self.index.add(embeddings)
 
-    def predict(self, queries: List[str]) -> tuple[List[str], List[str]]:
+    def predict(self, queries: List[str]) -> tuple[List[Dict], List[str]]:
         
         results = []
         q_emb = self.encoder.encode(queries)

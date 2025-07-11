@@ -40,7 +40,6 @@ rag.train(df.iloc[train_idx])
 
 
 print("Save the RAG")
-
 rag.save("dataset/models/rag/")
 
 print("Testing the RAG")

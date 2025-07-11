@@ -25,7 +25,7 @@ class LLMClassifierInferencer:
             try:
                 res = {}
                 res['priority'] = max(content['priority'].scores.items(), key=lambda x:x[1])[0]
-                res['support_team'] = max(content['priority'].scores.items(), key=lambda x:x[1])[0]
+                res['support_team'] = max(content['support_team'].scores.items(), key=lambda x:x[1])[0]
 
                 results.append(res)
                 
