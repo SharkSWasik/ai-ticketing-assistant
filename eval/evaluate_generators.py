@@ -29,7 +29,7 @@ def parse_arguments():
     parser.add_argument(
         "--rag_model_path", 
         type=str, 
-        default="dataset/models/rag.joblib",
+        default="dataset/models/rag/",
         help="Path to the rag model"
     )
 
@@ -49,24 +49,6 @@ def parse_arguments():
     
     return parser.parse_args()
 
-def create_rag(df_train):
-
-    print("Create the Generator")
-    gen = SimpleGenerator()
-
-    print("Create the RAG")
-    rag = RAGModel(
-        embedding_model_name="sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
-        generator=gen,
-        chunk_size=2048,
-        k=1
-    )
-
-    print("Training the RAG")
-    #create the embedding and vector database
-    rag.train(df_train)
-    return rag
-
 def evaluate_generators(args):
 
     #Load tickets
@@ -77,11 +59,14 @@ def evaluate_generators(args):
     processor = DataProcessor()
     df = processor.clean_df_inplace(df)
 
-    train_idx, test_idx = train_test_split(
+    _, test_idx = train_test_split(
         np.arange(len(df)), test_size=0.2, random_state=42
     )
 
-    rag = create_rag(df.iloc[train_idx])
+    print("RAG is loading")
+    rag = RAGModel.load(args.rag_model_path)
+
+    print("TopK is loading")
     top_k_recommender = TopKRecommender.load(args.topk_model_path)
     processor = DataProcessor()
 
@@ -97,7 +82,7 @@ def evaluate_generators(args):
         "groundedness": []
     }
 
-    for idx in tqdm.tqdm(test_idx[:10]):
+    for idx in tqdm.tqdm(test_idx[:1]):
 
         result, context = rag.predict([df.iloc[idx]["body"]])
         evaluations = evaluate_rag(df.iloc[idx]["body"], context, result)

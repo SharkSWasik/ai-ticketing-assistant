@@ -13,8 +13,8 @@ class RAGModel(BaseModel):
 
     def __init__(
         self,
-        embedding_model_name: str,
         generator: SimpleGenerator,
+        embedding_model_name: str = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
         chunk_size: int = 2048,
         k: int = 5
     ):
@@ -26,9 +26,7 @@ class RAGModel(BaseModel):
         self.k = k
         
         self.chunks: List[str] = []
-        self.responses: List[str] = []
         self.index: Optional[faiss.IndexFlatL2] = None
-        self.d = None
 
     def format_ticket(self, row: pd.Series) -> str:
         return (
@@ -92,15 +90,38 @@ class RAGModel(BaseModel):
 
         return results, contexts
     
-    def save(self, path:str):
-    #TODO
-        with open(path, 'wb') as f:
-            dump(self, f)
+    def save(self, dir_path:str):
+    
+        with open(dir_path + "recommender.joblib", 'wb') as f:
+            dump(self.encoder, f)
+
+        self.generator.save(dir_path + "generator.joblib")
+
+        with open(dir_path + "index.joblib", 'wb') as f:
+            dump(self.index, f)
+
+        with open(dir_path + "chunks.joblib", "wb") as f:
+            dump(self.chunks, f)
+
 
     @classmethod
-    def load(cls, path: str) -> 'RAGModel':
-    #TODO
-        with open(path, 'rb') as f:
-            model = load(f)
+    def load(cls, dir_path: str) -> 'RAGModel':
+    
+        with open(dir_path + "recommender.joblib", 'rb') as f:
+            encoder = load(f)
+
+        with open(dir_path + "generator.joblib", 'rb') as f:
+            generator = load(f)
+
+        with open(dir_path + "index.joblib", 'rb') as f:
+            index = load(f)
+
+        with open(dir_path + "chunks.joblib", 'rb') as f:
+            chunks = load(f)
+
+        model = RAGModel(generator=generator)
+        model.chunks = chunks
+        model.index = index
+        model.encoder = encoder
 
         return model

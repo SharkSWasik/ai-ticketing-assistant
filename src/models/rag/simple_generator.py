@@ -2,6 +2,7 @@ import os
 import json
 
 from mistralai import Mistral
+from joblib import dump, load
 
 class SimpleGenerator:
 
@@ -63,3 +64,27 @@ class SimpleGenerator:
         
         except json.JSONDecodeError as e:
             raise RuntimeError(f"Invalid JSON returned by generator: {content}")
+    
+    def __getstate__(self):
+        
+        state = self.__dict__.copy()
+        state.pop('client', None) #no client
+        return state
+
+    def __setstate__(self, state):
+
+        self.__dict__.update(state)
+        self.client = Mistral(api_key=self.api_key)
+
+    def save(self, path: str):
+        
+        with open(path, 'wb') as f:
+            dump(self, f)
+
+    @classmethod
+    def load(self, path: str) -> 'SimpleGenerator':
+
+        with open(path, 'wb') as f:
+            model = load(path)
+
+        return model

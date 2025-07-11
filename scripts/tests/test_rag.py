@@ -38,6 +38,11 @@ print("Training the RAG")
 #create the embedding and vector database
 rag.train(df.iloc[train_idx])
 
+
+print("Save the RAG")
+
+rag.save("dataset/models/rag/")
+
 print("Testing the RAG")
 #try gen on a test set sample
 for idx in test_idx[:1]:
