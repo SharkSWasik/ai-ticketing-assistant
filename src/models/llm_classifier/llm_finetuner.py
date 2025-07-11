@@ -29,10 +29,10 @@ class ClassificationFineTuner:
         #we do all class combination to balance each of them next
         self.df['combined_strata'] = self.df['priority'] + '_' + self.df['language'] + '_' + self.df['queue']
 
-    def balance_strata(self) -> pd.DataFrame:
+    def balance_strata(self, df) -> pd.DataFrame:
 
         samples = []
-        for _, group in self.df.groupby(self.strata):
+        for _, group in df.groupby(self.strata):
             if len(group) >= self.n_per:
                 sampled = group.sample(n=self.n_per, random_state=self.rs, replace=False)
             else:
@@ -83,7 +83,7 @@ class ClassificationFineTuner:
         project: str,
         wandb_key:str,
         model: str = "ministral-3b-latest",
-        steps: int = 100,
+        steps: int = 150,
         lr: float = 0.001,
         auto_start: bool = False
     ) -> dict:
@@ -106,13 +106,13 @@ class ClassificationFineTuner:
         self.create_strata()
         
         #balance class distributions
-        balanced = self.balance_strata()
-        train_i, val_i, _ = self.split_indices(balanced)
+        train_i, val_i, _ = self.split_indices(self.df)
+        balanced = self.balance_strata(self.df.iloc[train_i])
 
         train_path = os.path.join(self.dataset_dir, "train_data_classification.jsonl")
         val_path = os.path.join(self.dataset_dir, "validation_file_classification.jsonl")
-        self.write_jsonl(train_path, balanced, train_i)
-        self.write_jsonl(val_path,   balanced, val_i)
+        self.write_jsonl(train_path, balanced, np.arange(len(balanced)))
+        self.write_jsonl(val_path, self.df, val_i)
         
         train_id = self.upload_file(train_path, "train_data_classification.jsonl")
         val_id = self.upload_file(val_path, "validation_file_classification.jsonl")
