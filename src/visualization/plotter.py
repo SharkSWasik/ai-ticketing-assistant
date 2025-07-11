@@ -1,14 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Dict
+from typing import Dict, List
 
 class DataPlotter:
     def __init__(self, figsize=(20, 5)):
         self.figsize = figsize
         
     def plot_priority(self, df: pd.DataFrame):
-        _, ax = plt.subplots(figsize=(7, 4))
+        _, ax = plt.subplots(figsize=self.figsize)
         counts = df['priority'].value_counts().reindex(['high','medium','low'])
         counts.plot(
             kind="bar",
@@ -110,3 +110,27 @@ class DataPlotter:
         plt.show()
         
         return df_comparison
+    
+    def plot_llm_judge_score(self, ctx : List[int], ans : List[int], grd : List[int], title : str):
+
+        fig, ax = plt.subplots(figsize=self.figsize)
+        counts = {
+            "Context Relevance": [ctx.count('3'), ctx.count('2'), ctx.count('1')],
+            "Answer Relevance":  [ans.count('3'), ans.count('2'), ans.count('1')],
+            "Groundedness":      [grd.count('3'), grd.count('2'), grd.count('1')],
+        }
+        labels = list(counts.keys())
+        score3, score2, score1 = zip(*counts.values())
+        x = range(len(labels))
+        w = 0.25
+
+        ax.bar([i - w for i in x], score3, w, label="high_relevance", color="#A8E6CF")
+        ax.bar(x, score2, w, label="medium_relevance", color="#A8DADC")
+        ax.bar([i + w for i in x], score1, w, label="low_relevance", color="#F4A261")
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels)
+        ax.set_ylabel("Number of tickets")
+        ax.set_title(title)
+        ax.legend(title="Score")
+        plt.tight_layout()

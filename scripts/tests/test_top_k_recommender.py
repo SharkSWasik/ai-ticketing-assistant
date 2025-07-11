@@ -31,7 +31,11 @@ recommender = TopKRecommender(k=5)
 print("Train Recommender")
 recommender.train(embeddings[train_idx], responses[train_idx].values)
 
+print("Save Recommender")
+recommender.save("dataset/models/top_k_recommender.joblib")
+
 print("Print the recommended answer for a problem")
 for idx in test_idx[:1]:
+    print([embeddings[idx]])
     preds = recommender.predict([embeddings[idx]])
     print(problem[idx], preds[0][0])

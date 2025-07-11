@@ -79,7 +79,7 @@ class RAGModel(BaseModel):
         self.index = faiss.IndexFlatL2(self.d)
         self.index.add(embeddings)
 
-    def predict(self, queries: List[str]) -> List[str]:
+    def predict(self, queries: List[str]) -> tuple[List[str], List[str]]:
         
         results = []
         q_emb = self.encoder.encode(queries)
@@ -90,16 +90,16 @@ class RAGModel(BaseModel):
             gen = self.generator.generate(contexts, queries[idx])
             results.append(gen)
 
-        return results
+        return results, contexts
     
     def save(self, path:str):
-
+    #TODO
         with open(path, 'wb') as f:
             dump(self, f)
 
     @classmethod
     def load(cls, path: str) -> 'RAGModel':
-        
+    #TODO
         with open(path, 'rb') as f:
             model = load(f)
 
