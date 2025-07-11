@@ -10,7 +10,7 @@ class SimpleGenerator:
 
     def __init__(
         self,
-        model_name: str = "ft:mistral-small-latest:7e530b29:20250708:d2bd4879",
+        model_name: str = "mistral-small-latest",
         max_tokens: int = 512,
         temperature: float = 0.0,
     ):
@@ -30,10 +30,12 @@ class SimpleGenerator:
         ---------------------
         Given the context information and not prior knowledge, answer the query.
         Query: {problem}
-        You MUST detect the language of the Query, and respond in the exact same language.
         
+        CRITICAL : You MUST detect the language of the Query, and respond in the exact same language.
+
         CRITICAL: You MUST return ONLY a valid JSON object with exactly this structure. 
         Do not include any explanatory text, markdown formatting, or additional content.
+        
         Return only the JSON object with these exact field names and value types:
 
         {{
