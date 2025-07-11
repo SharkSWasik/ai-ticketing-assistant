@@ -77,7 +77,7 @@ def train_lightgbm(args):
 
     #Run Optuna optimization to find best params
     print("Starting HPO")
-    best_params = run_optimization(df_embeddings[columns], df_embeddings["y"], n_trials=5
+    best_params = run_optimization(df_embeddings[columns], df_embeddings["y"], n_trials=20
     )
 
     print("Best parameters found:", best_params)
@@ -114,8 +114,8 @@ def train_lightgbm(args):
     preds = clf.predict(X_test)
 
     acc = accuracy_score(y_test, preds)
-    f1 = f1_score(y_test, preds, average="weighted")
-    rec = recall_score(y_test, preds, average="weighted")
+    f1 = f1_score(y_test, preds, average="macro")
+    rec = recall_score(y_test, preds, average="macro")
 
     print("Test Accuracy :", acc)
     print("Test F1 Score :", f1)

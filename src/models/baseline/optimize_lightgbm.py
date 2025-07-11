@@ -6,8 +6,8 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 def objective(trial, X, y):
 
     params = {
-        "n_estimators": trial.suggest_int("n_estimators", 10, 100),
-        "num_leaves"   : trial.suggest_int("num_leaves", 10, 30),
+        "n_estimators": trial.suggest_int("n_estimators", 10, 300),
+        "num_leaves"   : trial.suggest_int("num_leaves", 10, 100),
         "learning_rate": trial.suggest_float("learning_rate", 1e-3, 5e-2, log=True),
         "max_depth"    : trial.suggest_int("max_depth", 3, 10),
         "min_data_in_leaf": trial.suggest_int("min_data_in_leaf", 100, 400),
