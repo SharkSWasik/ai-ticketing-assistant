@@ -111,26 +111,29 @@ class DataPlotter:
         
         return df_comparison
     
-    def plot_llm_judge_score(self, ctx : List[int], ans : List[int], grd : List[int], title : str):
+    def plot_llm_judge_score(self, ctx : List[int], ans : List[int], grd : List[int], lc : List[bool], title : str):
 
         fig, ax = plt.subplots(figsize=self.figsize)
         counts = {
             "Context Relevance": [ctx.count('3'), ctx.count('2'), ctx.count('1')],
             "Answer Relevance":  [ans.count('3'), ans.count('2'), ans.count('1')],
             "Groundedness":      [grd.count('3'), grd.count('2'), grd.count('1')],
+            "Language Consistency": [lc.count(True), 0, lc.count(False)]
         }
         labels = list(counts.keys())
         score3, score2, score1 = zip(*counts.values())
         x = range(len(labels))
         w = 0.25
 
-        ax.bar([i - w for i in x], score3, w, label="high_relevance", color="#A8E6CF")
-        ax.bar(x, score2, w, label="medium_relevance", color="#A8DADC")
-        ax.bar([i + w for i in x], score1, w, label="low_relevance", color="#F4A261")
-
+        ax.bar(x, score1, w, label="low_relevance / False", color="#F4A261")
+        ax.bar(x, score2, w, bottom=score1, label="medium_relevance", color="#A8DADC")
+        bottom2 = [i + j for i, j in zip(score1, score2)]
+        ax.bar(x, score3, w, bottom=bottom2, label="high_relevance / True", color="#A8E6CF")
+        
         ax.set_xticks(x)
         ax.set_xticklabels(labels)
         ax.set_ylabel("Number of tickets")
         ax.set_title(title)
-        ax.legend(title="Score")
+        ax.legend(title="Score / Is Language Consistent")
         plt.tight_layout()
+        plt.show()
