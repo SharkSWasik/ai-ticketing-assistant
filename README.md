@@ -15,10 +15,10 @@ poetry install
 
 I first used notebooks to visualize and experiment with different approaches:
 
-- [priority_classification_notebook](../notebooks/priority_classification.ipynb): used LightGBM to classify tickets by priority (baseline).
-- [similar_tickets_notebook](../notebooks/notebooks/similar_tickets.ipynb): created a top-k retrieval system based on embeddings to recommend answers (baseline).
-- [rag_notebook](../notebooks/notebooks/rag.ipynb): implemented a RAG approach to improve ticket answer quality and evaluated its impact on classification tasks (priority / support team routing).
-- [llm_fine_tuning](../notebooks/notebooks/fine-tuning.ipynb): aimed to improve classification results (especially for support team routing) using fine-tuned LLMs.
+- [priority_classification_notebook](notebooks/priority_classification.ipynb): used LightGBM to classify tickets by priority (baseline).
+- [similar_tickets_notebook](notebooks/notebooks/similar_tickets.ipynb): created a top-k retrieval system based on embeddings to recommend answers (baseline).
+- [rag_notebook](notebooks/notebooks/rag.ipynb): implemented a RAG approach to improve ticket answer quality and evaluated its impact on classification tasks (priority / support team routing).
+- [llm_fine_tuning](notebooks/notebooks/fine-tuning.ipynb): aimed to improve classification results (especially for support team routing) using fine-tuned LLMs.
 
 # Packaging
 
