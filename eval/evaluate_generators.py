@@ -5,7 +5,7 @@ import argparse
 import numpy as np
 import tqdm
 
-from src.models.rag import SimpleGenerator, RAGModel
+from src.models.rag import RAGModel
 from src.data.data_loader import SingleCSVDataLoader
 from src.data.data_processor import DataProcessor
 from src.visualization.plotter import DataPlotter
@@ -73,34 +73,38 @@ def evaluate_generators(args):
     rag_scores = {
        "context_relevance": [],
         "answer_relevance": [],
-        "groundedness": []
+        "groundedness": [],
+        "language_consistency": []
     }
 
     topk_scores = {
        "context_relevance": [],
         "answer_relevance": [],
-        "groundedness": []
+        "groundedness": [],
+        "language_consistency": []
     }
 
-    for idx in tqdm.tqdm(test_idx[:1]):
+    for idx in tqdm.tqdm(test_idx[:10]):
 
         result, context = rag.predict([df.iloc[idx]["body"]])
         evaluations = evaluate_rag(df.iloc[idx]["body"], context, result)
         rag_scores["context_relevance"].append(evaluations.context_relevance.score)
         rag_scores["answer_relevance"].append(evaluations.answer_relevance.score)
         rag_scores["groundedness"].append(evaluations.groundedness.score)
+        rag_scores["language_consistency"].append(evaluations.language_consistency.is_same_language)
 
         reco = top_k_recommender.predict(processor.generate_embeddings([df.iloc[idx]["body"]]))
         evaluations = evaluate_rag(df.iloc[idx]["body"], reco[0], reco[0][0])
         topk_scores["context_relevance"].append(evaluations.context_relevance.score)
         topk_scores["answer_relevance"].append(evaluations.answer_relevance.score)
         topk_scores["groundedness"].append(evaluations.groundedness.score)
+        topk_scores["language_consistency"].append(evaluations.language_consistency.is_same_language)
 
     plotter = DataPlotter()
 
     if args.plot_results:
-        plotter.plot_llm_judge_score(rag_scores["context_relevance"], rag_scores["answer_relevance"], rag_scores["groundedness"], title="RAG score with LLM as a Judge")
-        plotter.plot_llm_judge_score(topk_scores["context_relevance"], topk_scores["answer_relevance"], topk_scores["groundedness"], title="TopK score with LLM as a Judge")
+        plotter.plot_llm_judge_score(rag_scores["context_relevance"], rag_scores["answer_relevance"], rag_scores["groundedness"], rag_scores["language_consistency"], title="RAG score with LLM as a Judge")
+        plotter.plot_llm_judge_score(topk_scores["context_relevance"], topk_scores["answer_relevance"], topk_scores["groundedness"], topk_scores["language_consistency"], title="TopK score with LLM as a Judge")
 
 if __name__ == "__main__":
     

@@ -27,6 +27,10 @@ class ContextRelevance(BaseModel):
                     "in providing a coherent and useful response."))
     score: Score = Field(..., description=SCORE_DESCRIPTION)
 
+class LanguageConsistency(BaseModel):
+    explanation: str = Field(..., description="Step-by-step reasoning explaining whether the generated answer is in the same language as the query.")
+    is_same_language: bool = Field(..., description="Return true if the answer is in the same language as the query, false otherwise.")
+
 class AnswerRelevance(BaseModel):
     explanation: str = Field(..., description=("Step-by-step reasoning explaining how well the generated answer addresses the user's original query. "
                     "Consider the helpfulness and on-point nature of the answer, aligning with the user's intent and providing valuable insights."))
@@ -41,6 +45,7 @@ class RAGEvaluation(BaseModel):
     context_relevance: ContextRelevance = Field(..., description="Evaluation of the context relevance to the query, considering how well the retrieved context aligns with the user's intent." )
     answer_relevance: AnswerRelevance = Field(..., description="Evaluation of the answer relevance to the query, assessing how well the generated answer addresses the user's original query." )
     groundedness: Groundedness = Field(..., description="Evaluation of the groundedness of the generated answer, ensuring it is faithful to the retrieved context." )
+    language_consistency: LanguageConsistency = Field(..., description="Evaluation of whether the answer is in the same language as the query.")
 
 
 # Function to evaluate RAG metrics
